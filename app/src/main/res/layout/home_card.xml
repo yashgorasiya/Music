@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soup.neumorphism.NeumorphCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playCardView"
+    style="@style/Widget.Neumorph.CardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/ofWhite"
+    android:paddingStart="20dp"
+    android:paddingEnd="15dp"
+    app:neumorph_shapeType="pressed"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:ignore="RtlSymmetry">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/songThumb"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center_vertical"
+            android:padding="6dp"
+            android:src="@drawable/ic_baseline_music_note_24"
+            app:civ_border_color="@color/activeCardBg"
+            app:civ_border_width="2dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.666"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/songName"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/noto_sans"
+            android:layout_marginStart="66dp"
+            android:layout_marginEnd="10dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="2dp"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/songThumb"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/songDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans"
+            android:paddingStart="10dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="12dp"
+            android:textColor="@color/ofBlack"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/songThumb"
+            app:layout_constraintTop_toBottomOf="@+id/songName"
+            tools:ignore="SmallSp" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/homePlayingLottie"
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="10dp"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                android:layout_marginBottom="5dp"
+                app:lottie_rawRes="@raw/playingmusic"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+</soup.neumorphism.NeumorphCardView>
+
