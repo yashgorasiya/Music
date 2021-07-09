@@ -2,17 +2,22 @@ package com.yjisolutions.music;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
-import android.view.DragEvent;
+import android.provider.Settings;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -21,52 +26,117 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.airbnb.lottie.LottieAnimationView;
+import com.gauravk.audiovisualizer.visualizer.CircleLineVisualizer;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.yjisolutions.music.HelperClass.Music;
+import com.yjisolutions.music.HelperClass.Shorter;
+import com.yjisolutions.music.HelperClass.timerConversion;
+import com.yjisolutions.music.Services.OnClearFromRecentServise;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import soup.neumorphism.NeumorphCardView;
 import soup.neumorphism.NeumorphFloatingActionButton;
 
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+public class MainActivity extends AppCompatActivity implements OnItemClick, Playable {
 
-public class MainActivity extends AppCompatActivity implements OnItemClick {
-
-    private static final int MY_PERMISSION_REQUEST = 101;
-    private static final int MY_PERMISSION_REQUEST_WT = 201;
     RecyclerView recyclerView;
     List<Song> audioList = new ArrayList<>();
     MediaPlayer mediaPlayer;
     boolean mp = false;
     SongAdapter adapter;
     SeekBar seekBarCardPlay;
-    LottieAnimationView equlizerAnimation;
-    NeumorphFloatingActionButton playPausePlayCard,nextPlayCard,backPlaycard;
-    TextView titlePlayCard,durationLivePlayCard,durationPlayCard;
+    CircleLineVisualizer mVisualizer;
+    NeumorphFloatingActionButton playPausePlayCard, nextPlayCard, backPlaycard, floatingActionButton;
+    TextView titlePlayCard, durationLivePlayCard, durationPlayCard,titleBottom;
+    SeekBar seekbar;
+    private double startTime = 0;
+    private final Handler myHandler = new Handler();
+    int songPosition;
+    Uri myUri;
+    boolean seekbarFlag = true;
+    NotificationManager notificationManager;
+    boolean isPlaying = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NeumorphCardView songPlayCard = findViewById(R.id.songPlayCard);
-        Animation btu = AnimationUtils.loadAnimation(this,R.anim.bottumtoup);
-        Animation utd = AnimationUtils.loadAnimation(this,R.anim.uptobottom);
+        Dexter.withContext(this)
+                .withPermissions(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.RECORD_AUDIO
+                ).withListener(new MultiplePermissionsListener() {
+            @Override
+            public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+
+                if (multiplePermissionsReport.areAllPermissionsGranted()) {
+                    doStuff();
+                }else{
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Need Permissions");
+                    builder.setMessage("This app needs permission to use Visual effects with playing songs");
+                    builder.setPositiveButton("GOTO SETTINGS", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null);
+                            intent.setData(uri);
+                            startActivityForResult(intent, 101);
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            MainActivity.this.finish();
+                        }
+                    });
+                    builder.show();
+                }
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+                permissionToken.continuePermissionRequest();
+            }
+        }).withErrorListener(error -> Toast.makeText(getApplicationContext(), "Error occurred! ", Toast.LENGTH_SHORT).show())
+                .onSameThread()
+                .check();
+        
+
+        CardView songPlayCard = findViewById(R.id.songPlayCard);
+        songPlayCard.setOnClickListener(v -> {
+            
+        });
+        Animation utd = AnimationUtils.loadAnimation(this, R.anim.uptobottom);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createChannel();
+            registerReceiver(broadcastReceiver, new IntentFilter("TRACKS_TRACKS"));
+            startService(new Intent(getBaseContext(), OnClearFromRecentServise.class));
+        }
 
 
         //SongPLAyCard
-        equlizerAnimation = findViewById(R.id.equlizerAnimation);
+        mVisualizer = findViewById(R.id.blast);
         playPausePlayCard = findViewById(R.id.playPausePlayCard);
         nextPlayCard = findViewById(R.id.nextPlayCard);
         backPlaycard = findViewById(R.id.backPlaycard);
@@ -75,21 +145,21 @@ public class MainActivity extends AppCompatActivity implements OnItemClick {
         durationPlayCard = findViewById(R.id.duration);
         seekBarCardPlay = findViewById(R.id.seekBar);
 
+        //home
+        titleBottom = findViewById(R.id.homeBottomSongName);
+
         ImageView songPanelUp = findViewById(R.id.songThumbUp);
         ImageView songPanelDown = findViewById(R.id.songThumbDown);
         songPanelDown.setOnClickListener(v -> {
             songPlayCard.startAnimation(utd);
             songPlayCard.setVisibility(View.INVISIBLE);
         });
-        songPanelUp.setOnClickListener(v -> {
-            songPlayCard.startAnimation(btu);
-            songPlayCard.setVisibility(View.VISIBLE);
-        });
+        songPanelUp.setOnClickListener(v -> songPlayCard.setVisibility(View.VISIBLE));
 
 
         Toolbar toolbar = findViewById(R.id.toolbarHome);
         toolbar.setTitle("Music Player");
-        SearchView searchView  = findViewById(R.id.searchHome);
+        SearchView searchView = findViewById(R.id.searchHome);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -103,128 +173,167 @@ public class MainActivity extends AppCompatActivity implements OnItemClick {
             }
         });
 
-        checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, MY_PERMISSION_REQUEST);
-        checkPermission(WRITE_EXTERNAL_STORAGE, MY_PERMISSION_REQUEST_WT);
-
-
     }
 
+    private void createChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(CreateNotification.CHANNEL_ID,
+                    "yjisolution",
+                    NotificationManager.IMPORTANCE_LOW);
+            notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
+    }
 
-    void filter(String text){
+    public void sortByDate(MenuItem item) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            audioList.sort(new Shorter.songSorterByDateAdded());
+            adapter.updateList(audioList);
+        }
+    }
+
+    public void sortByNameAs(MenuItem item) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            audioList.sort(new Shorter.songSorterByNameAscending());
+            adapter.updateList(audioList);
+        }
+    }
+
+    public void sortByNameDes(MenuItem item) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            audioList.sort(new Shorter.songSorterByNameDescending());
+            adapter.updateList(audioList);
+        }
+    }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getExtras().getString("actionname");
+            switch (action) {
+                case CreateNotification.ACTION_PREVIOUS:
+                    onTrackPrevious();
+                    break;
+                case CreateNotification.ACTION_PLAY:
+                    if (isPlaying) {
+                        onTrackPause();
+                    } else {
+                        onTrackPlay();
+                    }
+                    break;
+                case CreateNotification.ACTION_NEXT:
+                    onTrackNext();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onTrackPrevious() {
+        if (songPosition != 0) {
+            songPosition--;
+            adapter.setSelectedPosition(songPosition);
+        }
+        Song temp = audioList.get(songPosition);
+        onClickData(temp.getUri(), temp.getName(), songPosition);
+        CreateNotification.createNotification(this, audioList.get(songPosition),
+                R.drawable.pause_button, songPosition, audioList.size() - 1);
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Override
+    public void onTrackPlay() {
+        CreateNotification.createNotification(this, audioList.get(songPosition),
+                R.drawable.pause_button, songPosition, audioList.size() - 1);
+        adapter.pause(songPosition, true);
+        if (!mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
+        }
+        floatingActionButton.setImageDrawable(getDrawable(R.drawable.pause_button));
+        playPausePlayCard.setImageDrawable(getDrawable(R.drawable.pause_button));
+        isPlaying = true;
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Override
+    public void onTrackPause() {
+        CreateNotification.createNotification(this, audioList.get(songPosition),
+                R.drawable.play_button, songPosition, audioList.size() - 1);
+        adapter.pause(songPosition, false);
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        }
+        floatingActionButton.setImageDrawable(getDrawable(R.drawable.play_button));
+        playPausePlayCard.setImageDrawable(getDrawable(R.drawable.play_button));
+        isPlaying = false;
+    }
+
+    @Override
+    public void onTrackNext() {
+
+        songPosition++;
+        if (audioList.size() == songPosition){
+            songPosition = 0 ;
+        }
+        Song temp = audioList.get(songPosition);
+        adapter.setSelectedPosition(songPosition);
+        onClickData(temp.getUri(), temp.getName(), songPosition);
+        CreateNotification.createNotification(this, audioList.get(songPosition),
+                R.drawable.pause_button, songPosition, audioList.size() - 1);
+    }
+
+    void filter(String text) {
         List<Song> temp = new ArrayList<>();
-        for(Song d: audioList){
-            if(d.getName().contains(text)){
+        for (Song d : audioList) {
+            if (d.getName().toLowerCase().contains(text)) {
                 temp.add(d);
             }
         }
-        //update recyclerview
         adapter.updateList(temp);
     }
 
     private void doStuff() {
         recyclerView = findViewById(R.id.homeRecView);
-        getMusic();
+        audioList = Music.getMusic(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        try{
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Shorter.songSorterByNameAscending shortbyName = new Shorter.songSorterByNameAscending();
+                audioList.sort(shortbyName);
+            audioList = Shorter.removeDuplicates((ArrayList<Song>) audioList);
+        }}catch (Exception ignored){
+
+        }
+
         adapter = new SongAdapter(audioList, MainActivity.this, this);
         recyclerView.setAdapter(adapter);
-
     }
-
-
-    public void getMusic() {
-        ContentResolver contentResolver = getContentResolver();
-
-        Uri songUri;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            songUri = MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL);
-        } else {
-            songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        }
-
-        try (@SuppressLint("Recycle") Cursor cursor = contentResolver.query(songUri,
-                null,
-                null,
-                null,
-                null)) {
-
-
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-
-                    String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-                    String size = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
-                    String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST));
-                    String url = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-
-                    audioList.add(new Song(url, title, artist, size));
-
-                } while (cursor.moveToNext());
-            }
-
-        } catch (Exception e) {
-            Toast.makeText(this, e + "Failed to Load Song", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-
-    public void checkPermission(String permission, int requestCode) {
-        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
-            // Requesting the permission
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, requestCode);
-        } else {
-            doStuff();
-        }
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode,
-                permissions,
-                grantResults);
-
-        if (requestCode == MY_PERMISSION_REQUEST) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                doStuff();
-                Toast.makeText(MainActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(MainActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
 
     private final Runnable UpdateSongTime = new Runnable() {
         @SuppressLint("DefaultLocale")
         public void run() {
             startTime = mediaPlayer.getCurrentPosition();
-
             if (seekbarFlag) {
                 seekbar.setProgress((int) startTime);
                 seekBarCardPlay.setProgress((int) startTime);
             }
-
-            durationLivePlayCard.setText(timerConversion((long) startTime));
-            myHandler.postDelayed(this, 100);
+            Random rnd = new Random();
+            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+            mVisualizer.setColor(color);
+            durationLivePlayCard.setText(timerConversion.timerConversion((long) startTime));
+            myHandler.postDelayed(this, 900);
         }
     };
 
-    SeekBar seekbar;
-    private double startTime = 0;
-    private final Handler myHandler = new Handler();
-    int songPosition;
-    Uri myUri;
-    boolean seekbarFlag = true;
-
     @Override
     @SuppressLint("UseCompatLoadingForDrawables")
-    public void onClickData(String value, String title , int position) {
-        this.songPosition =position;
+    public void onClickData(String value, String title, int position) {
+        this.songPosition = position;
         seekbar = findViewById(R.id.seekBarHomeBottom);
-        TextView titleBottom = findViewById(R.id.homeBottomSongName);
         titleBottom.setText(title);
         titlePlayCard.setText(title);
         myUri = Uri.parse(value);
@@ -247,154 +356,174 @@ public class MainActivity extends AppCompatActivity implements OnItemClick {
             mediaPlayer.setDataSource(getApplicationContext(), myUri);
             mediaPlayer.prepare();
             mediaPlayer.start();
-            adapter.play(songPosition,true);
+            adapter.play(songPosition, true);
+            if (mediaPlayer.getAudioSessionId() != -1) {
+                mVisualizer.setAudioSessionId(mediaPlayer.getAudioSessionId());
+            }
             startTime = mediaPlayer.getCurrentPosition();
             double finalTime = mediaPlayer.getDuration();
+            durationPlayCard.setText(timerConversion.timerConversion((long) finalTime));
+            myHandler.postDelayed(UpdateSongTime, 900);
             seekBarCardPlay.setMax((int) finalTime);
             seekbar.setMax((int) finalTime);
 
-            durationPlayCard.setText(timerConversion((long) finalTime));
-
-            seekBarCardPlay.setProgress((int) startTime);
-            seekbar.setProgress((int) startTime);
-            seekBarCardPlay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser) {
-                        mediaPlayer.seekTo(progress);
-                        if (progress == 0) {
-                            if (songPosition != 0) {
-                                songPosition--;
-                                adapter.setSelectedPosition(songPosition);
-                            }
-                            Song temp = audioList.get(songPosition);
-                            onClickData(temp.getUri(), temp.getName() ,songPosition);
-
-                        }
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                    seekbarFlag = false;
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    seekbarFlag = true;
-                }
-            });
-            seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser) {
-                        mediaPlayer.seekTo(progress);
-                        if (progress == 0) {
-                            if (songPosition != 0) {
-                                songPosition--;
-                                adapter.setSelectedPosition(songPosition);
-                            }
-                            Song temp = audioList.get(songPosition);
-                            onClickData(temp.getUri(), temp.getName() ,songPosition);
-
-                        }
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                    seekbarFlag = false;
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    seekbarFlag = true;
-                }
-            });
-
-
-            myHandler.postDelayed(UpdateSongTime, 100);
+            // On Complete MediaPlayer
             mediaPlayer.setOnCompletionListener(mp -> {
                 songPosition++;
+                if (audioList.size() == songPosition){
+                    songPosition = 0 ;
+                }
+                if (mediaPlayer.getAudioSessionId() != -1) {
+                    mVisualizer.setAudioSessionId(mediaPlayer.getAudioSessionId());
+                }
                 Song temp = audioList.get(songPosition);
                 adapter.setSelectedPosition(songPosition);
-                onClickData(temp.getUri(), temp.getName(),songPosition);
+                onClickData(temp.getUri(), temp.getName(), songPosition);
             });
             mp = true;
 
+            // Notification Creation
+            Song temp = audioList.get(songPosition);
+            CreateNotification.createNotification(this,
+                    temp,
+                    R.drawable.pause_button,
+                    songPosition,
+                    audioList.size() - 1);
 
-            nextPlayCard.setOnClickListener(v -> {
-                songPosition++;
-                Song temp = audioList.get(songPosition);
-                adapter.setSelectedPosition(songPosition);
-                onClickData(temp.getUri(), temp.getName(),songPosition);
-            });
 
-            backPlaycard.setOnClickListener(v -> {
-                if (songPosition != 0) {
-                    songPosition--;
-                    adapter.setSelectedPosition(songPosition);
-                }
-                Song temp = audioList.get(songPosition);
-                onClickData(temp.getUri(), temp.getName() ,songPosition);
-            });
-
-            NeumorphFloatingActionButton floatingActionButton = findViewById(R.id.playPauseHomeBottom);
-            floatingActionButton.setImageDrawable(getDrawable(R.drawable.pause_button));
-            playPausePlayCard.setImageDrawable(getDrawable(R.drawable.pause_button));
-            equlizerAnimation.playAnimation();
-            playPausePlayCard.setOnClickListener(v -> {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                    equlizerAnimation.cancelAnimation();
-                    adapter.pause(songPosition,false);
-                    playPausePlayCard.setImageDrawable(getDrawable(R.drawable.play_button));
-
-                } else {
-                    mediaPlayer.start();
-                    equlizerAnimation.playAnimation();
-                    adapter.play(songPosition,true);
-                    playPausePlayCard.setImageDrawable(getDrawable(R.drawable.pause_button));
-                }
-            });
-            floatingActionButton.setOnClickListener(v -> {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                    adapter.pause(songPosition,false);
-                    floatingActionButton.setImageDrawable(getDrawable(R.drawable.play_button));
-
-                } else {
-                    mediaPlayer.start();
-                    adapter.play(songPosition,true);
-                    floatingActionButton.setImageDrawable(getDrawable(R.drawable.pause_button));
-                }
-            });
 
         } catch (Exception e) {
             Toast.makeText(this, " " + e, Toast.LENGTH_SHORT).show();
         }
-    }
+        // Seekbar
+        seekBarCardPlay.setProgress((int) startTime);
+        seekbar.setProgress((int) startTime);
+        seekBarCardPlay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    mediaPlayer.seekTo(progress);
+                    if (progress == 0) {
+                        if (songPosition != 0) {
+                            songPosition--;
+                            adapter.setSelectedPosition(songPosition);
+                        }
+                        Song temp = audioList.get(songPosition);
+                        onClickData(temp.getUri(), temp.getName(), songPosition);
 
-    @SuppressLint("DefaultLocale")
-    public String timerConversion(long value) {
-        String audioTime;
-        int dur = (int) value;
-        int hrs = (dur / 3600000);
-        int mns = (dur / 60000) % 60000;
-        int scs = dur % 60000 / 1000;
+                    }
+                }
+            }
 
-        if (hrs > 0) {
-            audioTime = String.format("%02d:%02d:%02d", hrs, mns, scs);
-        } else {
-            audioTime = String.format("%02d:%02d", mns, scs);
-        }
-        return audioTime;
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                seekbarFlag = false;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                seekbarFlag = true;
+            }
+        });
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    mediaPlayer.seekTo(progress);
+                    if (progress == 0) {
+                        if (songPosition != 0) {
+                            songPosition--;
+                            adapter.setSelectedPosition(songPosition);
+                        }
+                        Song temp = audioList.get(songPosition);
+                        onClickData(temp.getUri(), temp.getName(), songPosition);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                seekbarFlag = false;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                seekbarFlag = true;
+            }
+        });
+
+        //home
+        floatingActionButton = findViewById(R.id.playPauseHomeBottom);
+        floatingActionButton.setImageDrawable(getDrawable(R.drawable.pause_button));
+        isPlaying = true;
+        floatingActionButton.setOnClickListener(v -> {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                isPlaying = false;
+                adapter.pause(songPosition, false);
+                floatingActionButton.setImageDrawable(getDrawable(R.drawable.play_button));
+                playPausePlayCard.setImageDrawable(getDrawable(R.drawable.play_button));
+
+            } else {
+                mediaPlayer.start();
+                isPlaying = true;
+                adapter.play(songPosition, true);
+                floatingActionButton.setImageDrawable(getDrawable(R.drawable.pause_button));
+                playPausePlayCard.setImageDrawable(getDrawable(R.drawable.pause_button));
+            }
+        });
+        nextPlayCard.setOnClickListener(v -> {
+            songPosition++;
+            if (audioList.size() == songPosition){
+                songPosition = 0 ;
+            }
+            Song temp = audioList.get(songPosition);
+            adapter.setSelectedPosition(songPosition);
+            onClickData(temp.getUri(), temp.getName(), songPosition);
+        });
+
+        backPlaycard.setOnClickListener(v -> {
+            if (songPosition != 0) {
+                songPosition--;
+                adapter.setSelectedPosition(songPosition);
+            }
+            Song temp = audioList.get(songPosition);
+            onClickData(temp.getUri(), temp.getName(), songPosition);
+        });
+
+
+        // Card
+        playPausePlayCard.setImageDrawable(getDrawable(R.drawable.pause_button));
+        playPausePlayCard.setOnClickListener(v -> {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                onTrackPause();
+                isPlaying = false;
+                adapter.pause(songPosition, false);
+                playPausePlayCard.setImageDrawable(getDrawable(R.drawable.play_button));
+                floatingActionButton.setImageDrawable(getDrawable(R.drawable.play_button));
+
+            } else {
+                mediaPlayer.start();
+                onTrackPlay();
+                isPlaying = true;
+                adapter.play(songPosition, true);
+                playPausePlayCard.setImageDrawable(getDrawable(R.drawable.pause_button));
+                floatingActionButton.setImageDrawable(getDrawable(R.drawable.pause_button));
+            }
+        });
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mediaPlayer.stop();
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+        }
+        notificationManager.cancelAll();
+        unregisterReceiver(broadcastReceiver);
     }
 }
 

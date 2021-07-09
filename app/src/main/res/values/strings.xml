@@ -3,4 +3,8 @@
     <string name="playPauseImage">playPauseImage</string>
     <string name="backward">backward</string>
     <string name="forward">forward</string>
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="play_it">Play it</string>
 </resources>

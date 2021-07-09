@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="playCard">#171717</color>
+    <color name="shadowLight">#202020</color>
+    <color name="shadowDark">#000000</color>
+    <color name="TransWhite">#65F3F3F3</color>
+    <color name="nocolor">#00FFFFFF</color>
+    <color name="ofWhite">#1B1B1B</color>
+    <color name="ShadowWhite">#2B2B2B</color>
+    <color name="ShadowWhiteDark">#000000</color>
+
+    <color name="text">#919191</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

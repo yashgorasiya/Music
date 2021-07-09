@@ -2,9 +2,10 @@
     <!-- Base application theme. -->
     <style name="Theme.Music" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/themewhite</item>
-        <item name="colorPrimaryVariant">@color/themewhite</item>
-        <item name="colorOnPrimary">@color/ofWhite</item>
+        <item name="android:actionMenuTextColor">@color/black</item>
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryVariant">@color/purple_500</item>
+        <item name="colorOnPrimary">@color/purple_700</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
@@ -12,6 +13,20 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.Music.Fullscreen" parent="Theme.Music">
+        <item name="android:actionMenuTextColor">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:actionBarStyle">@style/Widget.Theme.Music.ActionBar.Fullscreen</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="ThemeOverlay.Music.FullscreenContainer" parent="">
+        <item name="android:actionMenuTextColor">@color/black</item>
+        <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
+        <item name="fullscreenTextColor">@color/light_blue_A200</item>
     </style>
 
 </resources>

@@ -3,10 +3,10 @@
     <item android:id="@android:id/background"
         android:gravity="center_vertical|fill_horizontal">
         <shape android:shape="rectangle"
-            android:tint="@color/ofWhite">
-            <corners android:radius="24dp"/>
-            <size android:height="55dp" />
-            <solid android:color="@color/ofWhite" />
+            android:tint="@color/purple_500">
+            <corners android:radius="16dp"/>
+            <size android:height="50dp" />
+            <solid android:color="@color/purple_500" />
         </shape>
     </item>
     <item android:id="@android:id/progress"
@@ -17,10 +17,10 @@
                     android:drawable="@android:color/transparent" />
                 <item>
                     <shape android:shape="rectangle"
-                        android:tint="@color/seekbarProcess">
-                        <corners android:radius="24dp"/>
-                        <size android:height="55dp" />
-                        <solid android:color="@color/seekbarProcess" />
+                        android:tint="@color/TransWhite">
+                        <corners android:radius="16dp"/>
+                        <size android:height="50dp" />
+                        <solid android:color="@color/TransWhite" />
                     </shape>
                 </item>
             </selector>

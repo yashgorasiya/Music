@@ -1,24 +1,28 @@
 package com.yjisolutions.music;
 
-
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-
 public class Song {
-    private String uri;
-    private String name;
-    private String duration;
-    private String size;
+    private final String uri;
+    private final String name;
+    private final String duration;
+    private final String size;
+    private final String dateAdded;
 
-    public Song(String uri, String name, String duration, String size) {
+
+    public Song(String uri, String name, String duration, String size, String dateAdded) {
         this.uri = uri;
         this.name = name;
         this.duration = duration;
         this.size = size;
+        this.dateAdded = dateAdded;
     }
 
+    public String getDateAdded() {
+        return dateAdded;
+    }
 
+//    public void setDateAdded(String dateAdded) {
+//        this.dateAdded = dateAdded;
+//    }
 
     public String getUri() {
         return uri;
@@ -35,4 +39,5 @@ public class Song {
     public String getSize() {
         return size;
     }
+
 }

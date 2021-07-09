@@ -7,156 +7,116 @@
     android:background="@color/ofWhite"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatSeekBar
-        android:id="@+id/seekBarHomeBottom"
-        android:layout_width="match_parent"
-        android:layout_height="78dp"
-        android:layout_marginBottom="4dp"
-        android:foregroundGravity="top"
-        android:progressDrawable="@drawable/seekbar_process"
-        android:thumb="@color/ofWhite"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homeRecView" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/homeRecView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="78dp"
-        android:layout_marginBottom="78dp"
+        android:layout_marginTop="65dp"
+        android:layout_marginBottom="70dp"
         android:background="@color/ofWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <soup.neumorphism.NeumorphCardView
-        android:id="@+id/playCardView"
-        style="@style/Widget.Neumorph.CardView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/ofWhite"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="RtlSymmetry">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarHome"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/searchHome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/toolbar_bg"
-                android:gravity="top"
-                tools:ignore="RtlHardcoded" />
-
-        </androidx.appcompat.widget.Toolbar>
-    </soup.neumorphism.NeumorphCardView>
+            android:layout_height="70dp"
+            android:paddingTop="3dp"
+            android:background="@drawable/toolbar_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
 
-    <soup.neumorphism.NeumorphCardView
-        android:id="@+id/neumorphCardView2"
-        style="@style/Widget.Neumorph.CardView"
-        android:layout_width="match_parent"
-        android:layout_height="82dp"
-        android:foregroundGravity="top"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/seekBarHomeBottom"
+                android:layout_width="match_parent"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="50dp"
+                android:layout_height="65dp"
+                android:progressDrawable="@drawable/seekbar_process"
+                android:thumb="@color/ofWhite"
+                android:layout_marginBottom="6dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/homeBottomSongName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="55dp"
+                android:layout_marginEnd="65dp"
+                android:fontFamily="@font/noto_sans"
+                android:foregroundGravity="center_vertical"
+                android:gravity="center_vertical"
+                android:paddingTop="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="3dp"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/playPauseHomeBottom"
+                app:layout_constraintHorizontal_bias="0.409"
+                app:layout_constraintStart_toEndOf="@+id/songThumbUp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/songThumbUp"
-                android:layout_width="60dp"
+                android:layout_width="45dp"
                 android:layout_height="60dp"
-                android:layout_gravity="left"
-                android:layout_marginStart="10dp"
+                android:layout_gravity="center_vertical"
                 android:padding="8dp"
+                android:layout_marginStart="8dp"
                 android:src="@drawable/ic_baseline_keyboard_arrow_up_24"
-                app:civ_border_color="@color/ofBlack"
-                app:civ_border_width="2dp"
+                app:civ_border_color="@color/ofWhite"
+                app:civ_border_width="1dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="RtlHardcoded" />
 
-            <TextView
-                android:id="@+id/homeBottomSongName"
-                android:layout_width="200dp"
-                android:layout_height="match_parent"
-                android:fontFamily="@font/noto_sans"
-                android:gravity="center"
-                android:paddingStart="5dp"
-                android:paddingTop="5dp"
-                android:paddingEnd="5dp"
-                android:paddingBottom="5dp"
-                android:textSize="12sp" />
+            <soup.neumorphism.NeumorphFloatingActionButton
+                android:id="@+id/playPauseHomeBottom"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="end"
+                android:foregroundGravity="right"
+                android:padding="16dp"
+                android:src="@drawable/play_button"
+                app:neumorph_backgroundColor="@color/purple_500"
+                app:neumorph_shadowColorDark="@color/purple_700"
+                app:neumorph_shadowColorLight="@color/shadowLightStatic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="RtlHardcoded" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <soup.neumorphism.NeumorphFloatingActionButton
-                    android:id="@+id/playPauseHomeBottom"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="end"
-                    android:foregroundGravity="right"
-                    android:padding="16dp"
-                    android:src="@drawable/play_button"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="RtlHardcoded" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        </LinearLayout>
-    </soup.neumorphism.NeumorphCardView>
-
-
-    <soup.neumorphism.NeumorphCardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/songPlayCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/ofWhite"
         android:foregroundGravity="top"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/seekBarHomeBottom"
+        android:layout_margin="10dp"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="24dp"
+        android:background="@color/playCard"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:context=".songPlay">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/songPlayCardConst"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/ofWhite"
-            android:id="@+id/songPlayCardConst"
+            android:background="@color/playCard"
             android:paddingBottom="30dp"
             tools:context=".songPlay">
-
-
-            <TextView
-                android:id="@+id/playTitle"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="10dp"
-                android:gravity="center"
-                android:textSize="18sp"
-                app:layout_constraintTop_toBottomOf="@+id/neumorphCardView"
-                tools:ignore="RtlSymmetry" />
 
             <TextView
                 android:id="@+id/durationLive"
@@ -164,6 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="5dp"
+                android:textColor="@color/white"
                 android:textSize="13sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/seekBar" />
@@ -174,6 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="30dp"
+                android:textColor="@color/white"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/seekBar" />
@@ -183,8 +145,8 @@
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginEnd="12dp"
                 android:progressDrawable="@drawable/play_card_seekbar_process"
                 android:thumb="@color/ofWhite"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -198,61 +160,100 @@
                 android:layout_height="50dp"
                 android:layout_gravity="left"
                 android:layout_marginTop="3dp"
+                android:alpha="0.7"
                 android:padding="8dp"
                 android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
-                app:civ_border_color="@color/ofBlack"
+                app:civ_border_color="@color/ofWhite"
                 app:civ_border_width="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="RtlHardcoded" />
-
+            <TextView
+                android:id="@+id/playTitle"
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="35dp"
+                android:layout_marginEnd="10dp"
+                android:gravity="center"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/neumorphCardView"
+                tools:ignore="RtlSymmetry" />
             <soup.neumorphism.NeumorphCardView
                 android:id="@+id/neumorphCardView"
                 style="@style/Widget.Neumorph.FloatingActionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="55dp"
+                android:background="@color/purple_500"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:neumorph_backgroundColor="@color/playCard"
+                app:neumorph_shadowColorDark="@color/shadowDark"
+                app:neumorph_shadowColorLight="@color/shadowLight">
 
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:paddingStart="40dp"
-                    android:paddingTop="30dp"
-                    android:paddingEnd="30dp"
-                    android:paddingBottom="30dp"
-                    android:src="@drawable/icon_music"
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/albumART"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:src="@drawable/ic_logo"
+                    app:civ_border_width="0dp"
                     tools:ignore="ContentDescription" />
             </soup.neumorphism.NeumorphCardView>
+
+            <com.gauravk.audiovisualizer.visualizer.CircleLineVisualizer
+                android:id="@+id/blast"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:avColor="@color/av_dark_blue"
+                app:avDensity="0.8"
+                app:avSpeed="normal"
+                app:avType="fill"
+                app:layout_constraintBottom_toBottomOf="@+id/neumorphCardView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/neumorphCardView"
+                tools:ignore="RtlSymmetry" />
+
 
             <soup.neumorphism.NeumorphFloatingActionButton
                 android:id="@+id/playPausePlayCard"
                 style="@style/Widget.Neumorph.FloatingActionButton"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
-                android:layout_marginTop="40dp"
-                android:padding="40dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="48dp"
+                android:foregroundGravity="center_horizontal"
+                android:padding="35dp"
                 android:src="@drawable/play_button"
-                app:layout_constraintEnd_toStartOf="@+id/nextPlayCard"
-                app:layout_constraintStart_toEndOf="@+id/backPlaycard"
-                app:layout_constraintTop_toBottomOf="@+id/seekBar" />
-
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/seekBar"
+                app:neumorph_backgroundColor="@color/playCard"
+                app:neumorph_shadowColorDark="@color/shadowDark"
+                app:neumorph_shadowColorLight="@color/shadowLight" />
 
             <soup.neumorphism.NeumorphFloatingActionButton
                 android:id="@+id/backPlaycard"
                 style="@style/Widget.Neumorph.FloatingActionButton"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:layout_marginStart="40dp"
                 android:layout_marginTop="40dp"
-                android:padding="20dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/purple_500"
+                android:padding="25dp"
                 android:src="@drawable/back_backward"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/durationLive" />
-
+                app:layout_constraintEnd_toStartOf="@+id/playPausePlayCard"
+                app:layout_constraintTop_toBottomOf="@+id/durationLive"
+                app:neumorph_backgroundColor="@color/playCard"
+                app:neumorph_shadowColorDark="@color/shadowDark"
+                app:neumorph_shadowColorLight="@color/shadowLight" />
 
             <soup.neumorphism.NeumorphFloatingActionButton
                 android:id="@+id/nextPlayCard"
@@ -260,21 +261,39 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginTop="40dp"
-                android:layout_marginEnd="40dp"
-                android:padding="20dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/purple_500"
+                android:padding="25dp"
                 android:src="@drawable/next_skip"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/duration" />
+                app:layout_constraintStart_toEndOf="@+id/playPausePlayCard"
+                app:layout_constraintTop_toBottomOf="@+id/duration"
+                app:neumorph_backgroundColor="@color/playCard"
+                app:neumorph_shadowColorDark="@color/shadowDark"
+                app:neumorph_shadowColorLight="@color/shadowLight" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/equlizerAnimation"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            app:lottie_loop="true"
-            android:alpha="0.2"
-            android:layout_gravity="bottom"
-            app:lottie_rawRes="@raw/musiceq" />
-    </soup.neumorphism.NeumorphCardView>
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarHome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/menu"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:background="@drawable/toolbar_bg_top_home"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="top"
+            android:padding="5dp"
+            tools:ignore="RtlHardcoded" />
+
+    </androidx.appcompat.widget.Toolbar>
 </androidx.constraintlayout.widget.ConstraintLayout>
