@@ -2,9 +2,11 @@
 <resources>
 
     <color name="shadowLight">#790EFF</color>
+    <color name="shadowBlackLight">#202020</color>
     <color name="shadowDark">#FF3700B3</color>
+    <color name="shadowBlackDark">#000000</color>
     <color name="ofWhite">#F3F3F3</color>
-    <color name="playCard">#FF6200EE</color>
+    <color name="playCard">#171717</color>
     <color name="ShadowWhite">#FFFFFF</color>
     <color name="ShadowWhiteDark">#CFCFCF</color>
     <color name="text">#FF000000</color>

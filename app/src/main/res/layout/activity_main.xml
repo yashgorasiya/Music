@@ -168,6 +168,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="RtlHardcoded" />
+
             <TextView
                 android:id="@+id/playTitle"
                 android:layout_width="match_parent"
@@ -182,13 +183,13 @@
                 android:textSize="16sp"
                 app:layout_constraintTop_toBottomOf="@+id/neumorphCardView"
                 tools:ignore="RtlSymmetry" />
+
             <soup.neumorphism.NeumorphCardView
                 android:id="@+id/neumorphCardView"
                 style="@style/Widget.Neumorph.FloatingActionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="55dp"
-                android:background="@color/purple_500"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
@@ -236,8 +237,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/seekBar"
                 app:neumorph_backgroundColor="@color/playCard"
-                app:neumorph_shadowColorDark="@color/shadowDark"
-                app:neumorph_shadowColorLight="@color/shadowLight" />
+                app:neumorph_shadowColorDark="@color/shadowBlackDark"
+                app:neumorph_shadowColorLight="@color/shadowBlackLight" />
 
             <soup.neumorphism.NeumorphFloatingActionButton
                 android:id="@+id/backPlaycard"
@@ -246,14 +247,13 @@
                 android:layout_height="70dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="16dp"
-                android:background="@color/purple_500"
                 android:padding="25dp"
                 android:src="@drawable/back_backward"
                 app:layout_constraintEnd_toStartOf="@+id/playPausePlayCard"
                 app:layout_constraintTop_toBottomOf="@+id/durationLive"
                 app:neumorph_backgroundColor="@color/playCard"
-                app:neumorph_shadowColorDark="@color/shadowDark"
-                app:neumorph_shadowColorLight="@color/shadowLight" />
+                app:neumorph_shadowColorDark="@color/shadowBlackDark"
+                app:neumorph_shadowColorLight="@color/shadowBlackLight" />
 
             <soup.neumorphism.NeumorphFloatingActionButton
                 android:id="@+id/nextPlayCard"
@@ -262,14 +262,13 @@
                 android:layout_height="70dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginStart="16dp"
-                android:background="@color/purple_500"
                 android:padding="25dp"
                 android:src="@drawable/next_skip"
                 app:layout_constraintStart_toEndOf="@+id/playPausePlayCard"
                 app:layout_constraintTop_toBottomOf="@+id/duration"
                 app:neumorph_backgroundColor="@color/playCard"
-                app:neumorph_shadowColorDark="@color/shadowDark"
-                app:neumorph_shadowColorLight="@color/shadowLight" />
+                app:neumorph_shadowColorDark="@color/shadowBlackDark"
+                app:neumorph_shadowColorLight="@color/shadowBlackLight" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

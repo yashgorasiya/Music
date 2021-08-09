@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.yjisolutions.music.Song;
@@ -46,6 +47,7 @@ public class Music {
 
             }
         } catch (Exception e) {
+            Log.d("Exception","e"+e);
             Toast.makeText(context, e + "Failed to Load Song", Toast.LENGTH_SHORT).show();
         }
         return audioList;

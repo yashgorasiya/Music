@@ -6,7 +6,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -17,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -50,8 +50,8 @@ import java.util.List;
 import java.util.Random;
 
 import soup.neumorphism.NeumorphFloatingActionButton;
-
-public class MainActivity extends AppCompatActivity implements OnItemClick, Playable {
+public class MainActivity extends AppCompatActivity implements OnItemClick, Playable
+{
 
     RecyclerView recyclerView;
     List<Song> audioList = new ArrayList<>();
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClick, Play
     SeekBar seekBarCardPlay;
     CircleLineVisualizer mVisualizer;
     NeumorphFloatingActionButton playPausePlayCard, nextPlayCard, backPlaycard, floatingActionButton;
-    TextView titlePlayCard, durationLivePlayCard, durationPlayCard,titleBottom;
+    TextView titlePlayCard, durationLivePlayCard, durationPlayCard, titleBottom;
     SeekBar seekbar;
     private double startTime = 0;
     private final Handler myHandler = new Handler();
@@ -88,26 +88,21 @@ public class MainActivity extends AppCompatActivity implements OnItemClick, Play
 
                 if (multiplePermissionsReport.areAllPermissionsGranted()) {
                     doStuff();
-                }else{
+                } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle("Need Permissions");
                     builder.setMessage("This app needs permission to use Visual effects with playing songs");
-                    builder.setPositiveButton("GOTO SETTINGS", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getPackageName(), null);
-                            intent.setData(uri);
-                            startActivityForResult(intent, 101);
-                        }
+                    builder.setPositiveButton("GOTO SETTINGS", (dialog, which) -> {
+                        dialog.cancel();
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivityIfNeeded(intent, 101);
+//                        startActivityForResult(intent, 101);
                     });
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                            MainActivity.this.finish();
-                        }
+                    builder.setNegativeButton("Cancel", (dialog, which) -> {
+                        dialog.cancel();
+                        MainActivity.this.finish();
                     });
                     builder.show();
                 }
@@ -120,11 +115,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClick, Play
         }).withErrorListener(error -> Toast.makeText(getApplicationContext(), "Error occurred! ", Toast.LENGTH_SHORT).show())
                 .onSameThread()
                 .check();
-        
+
 
         CardView songPlayCard = findViewById(R.id.songPlayCard);
         songPlayCard.setOnClickListener(v -> {
-            
+
         });
         Animation utd = AnimationUtils.loadAnimation(this, R.anim.uptobottom);
 
@@ -276,8 +271,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClick, Play
     public void onTrackNext() {
 
         songPosition++;
-        if (audioList.size() == songPosition){
-            songPosition = 0 ;
+        if (audioList.size() == songPosition) {
+            songPosition = 0;
         }
         Song temp = audioList.get(songPosition);
         adapter.setSelectedPosition(songPosition);
@@ -299,18 +294,26 @@ public class MainActivity extends AppCompatActivity implements OnItemClick, Play
     private void doStuff() {
         recyclerView = findViewById(R.id.homeRecView);
         audioList = Music.getMusic(this);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        try{
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Shorter.songSorterByNameAscending shortbyName = new Shorter.songSorterByNameAscending();
                 audioList.sort(shortbyName);
-            audioList = Shorter.removeDuplicates((ArrayList<Song>) audioList);
-        }}catch (Exception ignored){
+                audioList = Shorter.removeDuplicates((ArrayList<Song>) audioList);
+            }
+        } catch (Exception exception) {
+            Log.d("roor", exception.toString());
 
         }
+        audioList = Shorter.removeDuplicates((ArrayList<Song>) audioList);
 
         adapter = new SongAdapter(audioList, MainActivity.this, this);
         recyclerView.setAdapter(adapter);
+        Log.d("roor", audioList.toString());
+//        Song sang = audioList.get(0);
+//        Toast.makeText(this, ""+sang.getName(), Toast.LENGTH_SHORT).show();
+
     }
 
     private final Runnable UpdateSongTime = new Runnable() {
@@ -370,8 +373,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClick, Play
             // On Complete MediaPlayer
             mediaPlayer.setOnCompletionListener(mp -> {
                 songPosition++;
-                if (audioList.size() == songPosition){
-                    songPosition = 0 ;
+                if (audioList.size() == songPosition) {
+                    songPosition = 0;
                 }
                 if (mediaPlayer.getAudioSessionId() != -1) {
                     mVisualizer.setAudioSessionId(mediaPlayer.getAudioSessionId());
@@ -389,7 +392,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClick, Play
                     R.drawable.pause_button,
                     songPosition,
                     audioList.size() - 1);
-
 
 
         } catch (Exception e) {
@@ -475,8 +477,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClick, Play
         });
         nextPlayCard.setOnClickListener(v -> {
             songPosition++;
-            if (audioList.size() == songPosition){
-                songPosition = 0 ;
+            if (audioList.size() == songPosition) {
+                songPosition = 0;
             }
             Song temp = audioList.get(songPosition);
             adapter.setSelectedPosition(songPosition);
@@ -519,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClick, Play
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer.isPlaying()) {
+        if (isPlaying) {
             mediaPlayer.stop();
         }
         notificationManager.cancelAll();

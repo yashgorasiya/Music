@@ -20,10 +20,6 @@ public class Song {
         return dateAdded;
     }
 
-//    public void setDateAdded(String dateAdded) {
-//        this.dateAdded = dateAdded;
-//    }
-
     public String getUri() {
         return uri;
     }

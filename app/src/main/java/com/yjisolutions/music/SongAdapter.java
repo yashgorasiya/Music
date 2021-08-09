@@ -2,6 +2,7 @@ package com.yjisolutions.music;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import soup.neumorphism.NeumorphCardView;
@@ -25,7 +25,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.viewHolder> {
     private int selectedPosition = -1;
     private final OnItemClick mCallback;
     List<Song> tempSong;
-    int size;
     Context context;
     int playPausePosition;
     int previousPlay = -1;
@@ -61,6 +60,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.viewHolder> {
         this.mCallback = listener;
     }
 
+
     private void setAnimation(View viewToAnimate) {
         Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
         viewToAnimate.startAnimation(animation);
@@ -85,6 +85,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.viewHolder> {
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_card, parent, false);
+        Log.d("OP" , "ViewHolder is working");
         return new viewHolder(v);
     }
 
@@ -92,15 +93,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.viewHolder> {
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull SongAdapter.viewHolder holder, int position) {
-        tempSong = new ArrayList<>();
-        if (tempSong!=null) {
-            size = tempSong.size();
-        }else{
-            size = 0;
-        }
+        Log.d("OP" , "On bind VH Working");
         Song temp = tempSong.get(position);
         holder.songTitle.setText(temp.getName());
-        String size = null;
+        String size = "";
         try {
             int sizel = Integer.parseInt(temp.getSize()) / 1024;
             if (sizel < 1024) {
@@ -109,7 +105,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.viewHolder> {
                 sizel = sizel / 1024;
                 size = sizel + " " + "MB";
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            Log.d("Exception","Size .....");
         }
 
         holder.Des.setText(temp.getDuration() + "   " + size);
@@ -153,7 +150,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.viewHolder> {
     @Override
     public int getItemCount() {
 
-        return size;
+        return tempSong.size();
     }
 
 
